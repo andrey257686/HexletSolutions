@@ -1,8 +1,18 @@
-
+import onChange from 'https://cdn.skypack.dev/on-change@2.2.0';
+import i18next from 'https://deno.land/x/i18next/index.js'
+import resources from './locales/index.js';
 
 window.onload = function() {  
 
-  const app = () => {
+  const app = async () => {
+
+    const i18nInstance = i18next.createInstance();
+    await i18nInstance.init({
+      lng: 'en',
+      resources,
+    });
+
+    console.log(i18nInstance.language);
 
     const getLocationProps = () => {
       const location = document.location;
@@ -29,7 +39,8 @@ window.onload = function() {
       const table = document.createElement('table');
       table.classList.add('table');
       const tbody = document.createElement('tbody');
-      const trFirst = `<th><a href="">Name (Asc)</a></th><th><a href="">Value (Unsorted)</a></th>`;
+      const trFirst = `<th><a href="">${i18nInstance.t('name')} (${i18nInstance.t('asc')})</a></th>
+      <th><a href="">${i18nInstance.t('value')} (${i18nInstance.t('unsorted')})</a></th>`;
       tbody.innerHTML = trFirst;
       table.append(tbody);
       container.append(table);
