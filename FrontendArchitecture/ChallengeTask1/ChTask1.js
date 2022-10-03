@@ -12,7 +12,15 @@ window.onload = function() {
       resources,
     });
 
-    console.log(i18nInstance.language);
+    const state = {
+      name: 'asc',
+      value: 'unsorted',
+    }
+
+    const watchedState = onChange(state, (path, value, previousValue) => {
+      
+      render();
+    })
 
     const getLocationProps = () => {
       const location = document.location;
@@ -31,19 +39,82 @@ window.onload = function() {
       return objectedLocationProps;
     }
 
-    const render = () => {
+    // const handleClickColumn = (event) => {
+    //   const nextSortDirections = {
+    //     asc: 'desc',
+    //     desc: 'asc',
+    //     unsorted: 'asc'
+    //   }
+    //   event.preventDefault();
+    //   const idElement = event.target.id;
+    //   // console.log(nextSortDirections[state[idElement]])
+    //   watchedState[idElement] = nextSortDirections[state[idElement]];
+
+    //   // if (state.activeCol === idElement){
+    //     // watchedState.method = nextSortDirections[watchedState.method];
+    //   // }  
+    //   // watchedState.activeCol = idElement;
+    // }
+
+    const nextSortDirection = {
+      asc: 'desc',
+      desc: 'asc',
+      unsorted: 'asc'
+    }
+
+    const handleClickOnNameLink = (event) => {
+      event.preventDefault();
+      const nextStateLink = nextSortDirection[watchedState.name];
+      watchedState.value = 'unsorted';
+      watchedState.name = nextStateLink;
+    }
+
+    const handleClickOnValueLink = (event) => {
+      event.preventDefault();
+      const nextStateLink = nextSortDirection[watchedState.value];
+      watchedState.name = 'unsorted';
+      watchedState.value = nextStateLink;
+    }
+
+    const sortProps = () => {
+      // TODO: Сделать сортировку
+    }
+
+    const render = (previousCol) => {
+      
       const locationProps = getLocationProps();
       console.log(locationProps);
+
       const container = document.querySelector('.container');
       container.innerHTML = '';
       const table = document.createElement('table');
       table.classList.add('table');
       const tbody = document.createElement('tbody');
-      const trFirst = `<th><a href="">${i18nInstance.t('name')} (${i18nInstance.t('asc')})</a></th>
-      <th><a href="">${i18nInstance.t('value')} (${i18nInstance.t('unsorted')})</a></th>`;
-      tbody.innerHTML = trFirst;
+      const trFirst = document.createElement('tr');
+      const thName = document.createElement('th');
+      // thName.addEventListener('click', handleClickColumn);
+      const thValue = document.createElement('th');
+      // thValue.addEventListener('click', handleClickColumn);
+      thName.innerHTML = `<a href = '#'>${i18nInstance.t('name')} (${i18nInstance.t(`${state.name}`)})</a>`;
+      thValue.innerHTML = `<a href = '#'>${i18nInstance.t('value')} (${i18nInstance.t(`${state.value}`)})</a>`;
+      // if (state.activeCol === 'name'){
+      //   thName.innerHTML = `<a href = '#' id='name'>${i18nInstance.t('name')} (${i18nInstance.t(`${state.method}`)})</a>`;
+      //   thValue.innerHTML = `<a href ='#' id='value'>${i18nInstance.t('value')} (${i18nInstance.t('unsorted')})</a>`;
+      // }
+      // else {
+      //   thName.innerHTML = `<a href='#' id='name'>${i18nInstance.t('name')} (${i18nInstance.t('unsorted')})</a>`;
+      //   thValue.innerHTML = `<a href ='#' id='value'>${i18nInstance.t('value')} (${i18nInstance.t(`${state.method}`)})</a>`;
+      // }
+      trFirst.append(thName,thValue);
+      // const trFirst = `<th><a href="">${i18nInstance.t('name')} (${i18nInstance.t('asc')})</a></th>
+      // <th><a href="">${i18nInstance.t('value')} (${i18nInstance.t('unsorted')})</a></th>`;
+      // tbody.innerHTML = trFirst;
+      tbody.append(trFirst);
       table.append(tbody);
       container.append(table);
+      const [nameLink, valueLink] = container.querySelectorAll('a');
+      nameLink.addEventListener('click', handleClickOnNameLink);
+      valueLink.addEventListener('click', handleClickOnValueLink);
       for (const key in locationProps){
         const tr = document.createElement('tr');
         const tdName = document.createElement('td');
@@ -51,9 +122,10 @@ window.onload = function() {
         const tdValue = document.createElement('td');
         tdValue.textContent = locationProps[key];
         tr.append(tdName, tdValue);
-        table.append(tr);
+        tbody.append(tr);
       }
     }
+
 
     render();
 
