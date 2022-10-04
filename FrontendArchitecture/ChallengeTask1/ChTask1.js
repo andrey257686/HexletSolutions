@@ -1,5 +1,5 @@
 import onChange from 'https://cdn.skypack.dev/on-change@2.2.0';
-import i18next from 'https://deno.land/x/i18next/index.js'
+import i18next from 'https://deno.land/x/i18next/index.js';
 import resources from './locales/index.js';
 
 window.onload = function() {  
@@ -18,9 +18,10 @@ window.onload = function() {
     }
 
     const watchedState = onChange(state, (path, value, previousValue) => {
-      
-      render();
-    })
+      if (value !== 'unsorted'){
+        render();
+      }
+    })  
 
     const getLocationProps = () => {
       const location = document.location;
@@ -38,23 +39,6 @@ window.onload = function() {
       });
       return objectedLocationProps;
     }
-
-    // const handleClickColumn = (event) => {
-    //   const nextSortDirections = {
-    //     asc: 'desc',
-    //     desc: 'asc',
-    //     unsorted: 'asc'
-    //   }
-    //   event.preventDefault();
-    //   const idElement = event.target.id;
-    //   // console.log(nextSortDirections[state[idElement]])
-    //   watchedState[idElement] = nextSortDirections[state[idElement]];
-
-    //   // if (state.activeCol === idElement){
-    //     // watchedState.method = nextSortDirections[watchedState.method];
-    //   // }  
-    //   // watchedState.activeCol = idElement;
-    // }
 
     const nextSortDirection = {
       asc: 'desc',
@@ -76,15 +60,20 @@ window.onload = function() {
       watchedState.value = nextStateLink;
     }
 
-    const sortProps = () => {
-      // TODO: Сделать сортировку
+    const sortProps = (currentState, props) => {
+      const sortedColumn = Object.keys(state).find((key) => state[key] === 'asc' || state[key] === 'desc');
+      const arrEntries = Object.entries(props);
+      const sortedProps = arrEntries.sort((el1, el2) => {
+        let [val1, val2] = sortedColumn === 'name' ? [el1[0], el2[0]] : [el1[1], el2[1]];
+        return currentState[sortedColumn] === 'asc' ? val1.localeCompare(val2) : val2.localeCompare(val1);
+      });
+      return Object.fromEntries(sortedProps);
     }
 
-    const render = (previousCol) => {
+    const render = () => {
       
       const locationProps = getLocationProps();
-      console.log(locationProps);
-
+      const sortedLocationProps = sortProps(state, locationProps);
       const container = document.querySelector('.container');
       container.innerHTML = '';
       const table = document.createElement('table');
@@ -92,35 +81,22 @@ window.onload = function() {
       const tbody = document.createElement('tbody');
       const trFirst = document.createElement('tr');
       const thName = document.createElement('th');
-      // thName.addEventListener('click', handleClickColumn);
       const thValue = document.createElement('th');
-      // thValue.addEventListener('click', handleClickColumn);
       thName.innerHTML = `<a href = '#'>${i18nInstance.t('name')} (${i18nInstance.t(`${state.name}`)})</a>`;
       thValue.innerHTML = `<a href = '#'>${i18nInstance.t('value')} (${i18nInstance.t(`${state.value}`)})</a>`;
-      // if (state.activeCol === 'name'){
-      //   thName.innerHTML = `<a href = '#' id='name'>${i18nInstance.t('name')} (${i18nInstance.t(`${state.method}`)})</a>`;
-      //   thValue.innerHTML = `<a href ='#' id='value'>${i18nInstance.t('value')} (${i18nInstance.t('unsorted')})</a>`;
-      // }
-      // else {
-      //   thName.innerHTML = `<a href='#' id='name'>${i18nInstance.t('name')} (${i18nInstance.t('unsorted')})</a>`;
-      //   thValue.innerHTML = `<a href ='#' id='value'>${i18nInstance.t('value')} (${i18nInstance.t(`${state.method}`)})</a>`;
-      // }
       trFirst.append(thName,thValue);
-      // const trFirst = `<th><a href="">${i18nInstance.t('name')} (${i18nInstance.t('asc')})</a></th>
-      // <th><a href="">${i18nInstance.t('value')} (${i18nInstance.t('unsorted')})</a></th>`;
-      // tbody.innerHTML = trFirst;
       tbody.append(trFirst);
       table.append(tbody);
       container.append(table);
       const [nameLink, valueLink] = container.querySelectorAll('a');
       nameLink.addEventListener('click', handleClickOnNameLink);
       valueLink.addEventListener('click', handleClickOnValueLink);
-      for (const key in locationProps){
+      for (const key in sortedLocationProps){
         const tr = document.createElement('tr');
         const tdName = document.createElement('td');
         tdName.textContent = key;
         const tdValue = document.createElement('td');
-        tdValue.textContent = locationProps[key];
+        tdValue.textContent = sortedLocationProps[key];
         tr.append(tdName, tdValue);
         tbody.append(tr);
       }
