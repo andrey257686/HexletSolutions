@@ -1,5 +1,8 @@
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 
+if (module.hot)
+  module.hot.accept()
+
 module.exports = {
   
   entry: './src/index.js',
