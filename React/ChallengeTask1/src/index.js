@@ -2,59 +2,76 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Popup from 'reactjs-popup';
 
+const fields = [
+  {
+    id: 'firstName',
+    title: 'Имя',
+    type: 'text',
+    description: 'Ваше имя',
+  },
+  {
+    id: 'lastName',
+    title: 'Фамилия',
+    type: 'text',
+    description: 'Ваша фамилия',
+  },
+  {
+    id: 'email',
+    title: 'Email',
+    type: 'email',
+    description: 'Ваш email',
+  },
+  {
+    id: 'password',
+    title: 'Пароль',
+    type: 'password',
+    description: 'Придумайте надёжный пароль',
+  },
+];
+
+const Prompt = ({ text }) => (
+  <label className="form-label">{text} </label>
+);
+
+const Input = ( { item } ) => {
+  return (
+    <div className='mb-3'>
+    <label className="form-label" for={item.id}>{item.title}</label>
+    <Popup
+      trigger={<input
+        aria-describedby="popup-1"
+        type={item.type}
+        id={item.id}
+        className="form-control"
+      />}
+      position="right top"
+      on="hover"
+    >
+    <Prompt text={item.description}/>
+    </Popup>
+    </div>
+  )
+}
+
 class RegistrationForm extends React.Component {
   render () {
     return (
-      <div id="container" class="container m-3">
-        <div class="col-5">
-          <h1 class="my-4">Регистрация</h1>
-          <form class="">
-            <div class="mb-3">
-              <label class="form-label" for="firstName">Имя</label>
-              <input
-                aria-describedby="popup-1"
-                type="text"
-                id="firstName"
-                class="form-control"
-              />
-            </div>
-            <div class="mb-3">
-              <label class="form-label" for="lastName">Фамилия</label>
-              <input
-                aria-describedby="popup-2"
-                type="text"
-                id="lastName"
-                class="form-control"
-              />
-            </div>
-            <div class="mb-3">
-              <label class="form-label" for="email">Email</label>
-              <input
-                aria-describedby="popup-3"
-                type="email"
-                id="email"
-                class="form-control"
-              />
-            </div>
-            <div class="mb-3">
-              <label class="form-label" for="password">Пароль</label>
-              <input
-                aria-describedby="popup-4"
-                type="password"
-                id="password"
-                class="form-control"
-              />
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+        <div className="col-5">
+          <h1 className="my-4">Регистрация</h1>
+          <form className="">
+          {
+            fields.map((field) => {
+              return (
+                <Input item={field} />
+              )
+            })
+          }
+            <button type="submit" className="btn btn-primary">Submit</button>
           </form>
         </div>
-      </div>
     )
   }
 }
 
-const PopupExample = () => (  <Popup trigger={<button> Trigger</button>} position="right center">    <div>Popup content here !!</div>  </Popup>);
-
 const root = ReactDOM.createRoot(document.getElementById('container'));
 root.render(<RegistrationForm />);
-// root.render(<Test />);
