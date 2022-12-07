@@ -1,0 +1,13 @@
+{
+  "name": "challengetask1",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "AlarmClock.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node AlarmClock.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
